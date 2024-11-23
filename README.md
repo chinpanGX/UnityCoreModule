@@ -1,0 +1,2 @@
+# UnityCoreModule
+Unityで汎用的に使えるモジュールを作成する

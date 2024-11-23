@@ -34,7 +34,6 @@ CoreModule/Packages/以下のライブラリについて
 
     サンプル
     {
-        "jp.adarapata.screensystem": "file:../../Packages/ScreenSystem",
         "personalpackage": "file:../../Packages/PersonalPackage",
     }
 

@@ -249,6 +249,12 @@
       },
       "url": "https://packages.unity.com"
     },
+    "dotween": {
+      "version": "file:../../Packages/DOTween",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "jp.adarapata.screensystem": {
       "version": "file:../../Packages/ScreenSystem",
       "depth": 0,

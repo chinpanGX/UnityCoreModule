@@ -8,6 +8,7 @@
         "com.harumak.unityscreennavigator": "https://github.com/Haruma-K/UnityScreenNavigator.git?path=/Assets/UnityScreenNavigator",
         "jp.adarapata.screensystem": "file:../../Packages/ScreenSystem",
         "personalpackage": "file:../../Packages/PersonalPackage",
+        "dotween": "file:../../Packages/DOTween",
         "com.unity.ai.navigation": "2.0.4",
         "com.unity.collab-proxy": "2.5.2",
         "com.unity.ide.rider": "3.0.31",

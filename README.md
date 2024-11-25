@@ -12,11 +12,11 @@
 - ローカル変数は"var"を使う
 - 定数はstatic readonlyを使って定義する（constは使わない）
 - namespaceは、フォルダ構成に合わせて命名する。ただし、"Scripts"は省略する。"Runtime","Editor"などは任意。
-  - 例) App.Presentation.Sample
+  - 例) App.Sample
 
 ### サンプル
 ```C#
-namespace App.Presentation.Sample
+namespace App.Sample
 {
     class MyClass : MonoBehaviour
     {

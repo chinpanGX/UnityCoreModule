@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace Common.Presenter
+namespace AppCore.Runtime
 {
     public class UpdatablePresenter
     {

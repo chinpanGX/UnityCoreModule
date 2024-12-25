@@ -1,6 +1,6 @@
 using System;
 
-namespace Common.Presenter
+namespace AppCore.Runtime
 {
     public interface IPresenter : IDisposable
     {

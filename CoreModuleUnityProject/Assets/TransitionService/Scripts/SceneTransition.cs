@@ -2,7 +2,7 @@ using AppService.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace App.TransitionService
+namespace TransitionService
 {
     public static class SceneName
     {
@@ -12,13 +12,13 @@ namespace App.TransitionService
 
     public class SceneTransition
     {
-        private readonly Fade fade = ComponentLocator.Get<Fade>();
+        private readonly FadeScreen fadeScreen = ComponentLocator.Get<FadeScreen>();
 
         public async void ChangeScene(string sceneName)
         {
-            await fade.FadeIn();
+            await fadeScreen.FadeIn();
             await SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
-            await fade.FadeOut();
+            await fadeScreen.FadeOut();
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace App.TransitionService
+namespace TransitionService
 {
-    public class Fade : MonoBehaviour
+    public class FadeScreen : MonoBehaviour
     {
         [SerializeField] private CanvasGroup fadeCanvasGroup;
         [Range(0.1f, 1.0f)] [SerializeField] private float durationSecond;
@@ -13,11 +13,11 @@ namespace App.TransitionService
             var elapsedTime = 0f;
             while (elapsedTime < durationSecond)
             {
-                fadeCanvasGroup.alpha = Mathf.Lerp(1, 0, elapsedTime / durationSecond);
+                fadeCanvasGroup.alpha = Mathf.Lerp(0, 1, elapsedTime / durationSecond);
                 elapsedTime += Time.deltaTime;
-                await UniTask.Yield(PlayerLoopTiming.Update);
+                await UniTask.Yield(PlayerLoopTiming.Update, destroyCancellationToken);
             }
-            fadeCanvasGroup.alpha = 0;
+            fadeCanvasGroup.alpha = 1;
         }
 
         public async UniTask FadeOut()
@@ -25,11 +25,11 @@ namespace App.TransitionService
             var elapsedTime = 0f;
             while (elapsedTime < durationSecond)
             {
-                fadeCanvasGroup.alpha = Mathf.Lerp(0, 1, elapsedTime / durationSecond);
+                fadeCanvasGroup.alpha = Mathf.Lerp(1, 0, elapsedTime / durationSecond);
                 elapsedTime += Time.deltaTime;
-                await UniTask.Yield(PlayerLoopTiming.Update);
+                await UniTask.Yield(PlayerLoopTiming.Update, destroyCancellationToken);
             }
-            fadeCanvasGroup.alpha = 1;
+            fadeCanvasGroup.alpha = 0;  
         }
 
         public void BlackOut()

@@ -1,5 +1,4 @@
-
-namespace Common.Director
+namespace AppCore.Runtime
 {
     public interface IDirector
     {

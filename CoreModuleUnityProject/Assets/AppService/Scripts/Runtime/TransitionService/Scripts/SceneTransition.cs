@@ -1,15 +1,8 @@
-using AppService.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace TransitionService
+namespace AppService.Runtime
 {
-    public static class SceneName
-    {
-        public static readonly string Core = "CoreScene";
-        public static readonly string Title = "TitleScene";
-    }
-
     public class SceneTransition
     {
         private readonly FadeScreen fadeScreen = ComponentLocator.Get<FadeScreen>();

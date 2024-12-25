@@ -1,7 +1,8 @@
-﻿using Cysharp.Threading.Tasks;
+﻿
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace TransitionService
+namespace AppService.Runtime
 {
     public class FadeScreen : MonoBehaviour
     {

@@ -10,6 +10,7 @@ namespace UserData
         public string Value { get; }
         
         public static UserName Create(string value) => new(value);
+        public static UserName DefaultValue => new("Guest");
 
         private UserName(string value)
         {

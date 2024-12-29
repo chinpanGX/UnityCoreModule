@@ -1,4 +1,5 @@
 using AppCore.Runtime;
+using AppService.Runtime;
 using R3;
 
 namespace App.Title
@@ -9,12 +10,14 @@ namespace App.Title
         private TitleModel Model { get; set; }
         private TitleView View { get; set; }
         private StateMachine<TitlePresenter> StateMachine { get; set; }
+        private SceneTransition SceneTransition { get; set; }
 
-        public TitlePresenter(TitleDirector director, TitleModel model, TitleView view)
+        public TitlePresenter(TitleDirector director, TitleModel model, TitleView view, SceneTransition sceneTransition)
         {
             Director = director;
             Model = model;
             View = view;
+            SceneTransition = sceneTransition;
             StateMachine = new StateMachine<TitlePresenter>(this);
             StateMachine.Change<StateInit>();
         }
@@ -77,7 +80,7 @@ namespace App.Title
         {
             public override void Begin(TitlePresenter owner)
             {
-                
+                owner.SceneTransition.ChangeScene("Home");
             }
         }
     }

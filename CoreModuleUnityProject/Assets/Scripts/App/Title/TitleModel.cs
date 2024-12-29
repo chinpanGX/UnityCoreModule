@@ -1,3 +1,4 @@
+using App.UserService.Application;
 using R3;
 
 namespace App.Title
@@ -14,9 +15,12 @@ namespace App.Title
 
         public Observable<TransitionState> OnTransitionState => transitionState;
 
-        public TitleModel()
+        public TitleModel(UserApplicationService userApplicationService)
         {
-            
+            if (userApplicationService.ExistUserData())
+            { 
+                transitionState.OnNext(TransitionState.Home);
+            }
         }
         
         public void Dispose()

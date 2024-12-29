@@ -8,7 +8,7 @@ namespace App.Title
     {
         private UpdatablePresenter updatablePresenter;
         private FadeScreen fadeScreen;
-        private IPresenterFactory presenterFactory;
+        private PresenterFactoryProvider presenterFactoryProvider;
         
         private void Start()
         {
@@ -19,12 +19,7 @@ namespace App.Title
         public async void Push(string name)
         {
             await fadeScreen.FadeIn();
-            
-            IPresenter request = name switch
-            {
-                "Title" => await presenterFactory.CreateAsync(),
-                _ => null!
-            };
+            var request = await presenterFactoryProvider.Get(name).CreateAsync();
             updatablePresenter.SetRequest(request);
             await fadeScreen.FadeOut(); 
         }

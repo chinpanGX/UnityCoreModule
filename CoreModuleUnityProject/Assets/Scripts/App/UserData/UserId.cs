@@ -1,6 +1,6 @@
 using System;
 
-namespace AppCore.Runtime.UserData
+namespace UserData
 {
     public class UserId
     {

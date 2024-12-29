@@ -1,4 +1,4 @@
-namespace AppService.Runtime.UserData
+namespace UserData
 {
     public interface IUserRepository
     {

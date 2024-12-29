@@ -1,7 +1,6 @@
 using System;
-using AppCore.Runtime.UserData;
 
-namespace AppService.Runtime.UserData
+namespace UserData
 {
     public class UserEntity
     {

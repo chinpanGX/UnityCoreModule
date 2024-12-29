@@ -1,5 +1,4 @@
 #nullable enable
-using System;
 using R3;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +15,7 @@ namespace AppService.Runtime
         public Observable<bool> Activated => onOffSubject;
         private bool isActivated;
 
-        public void Setup(bool isActivated)
+        public void SetupSafe(bool isActivated)
         {
             if (customButton == null)
             {

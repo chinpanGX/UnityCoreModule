@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace AppService.Runtime
+namespace AppCore.Runtime
 {
     public static class ComponentLocator
     {

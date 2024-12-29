@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AppService.Runtime
+namespace AppCore.Runtime
 {
     public interface IView
     {

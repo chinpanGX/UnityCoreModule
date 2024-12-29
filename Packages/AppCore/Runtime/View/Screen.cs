@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AppService.Runtime
+namespace AppCore.Runtime
 {
     public class Screen : MonoBehaviour
     {

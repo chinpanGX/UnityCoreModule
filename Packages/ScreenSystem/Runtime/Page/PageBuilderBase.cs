@@ -13,8 +13,8 @@ namespace ScreenSystem.Page
         where TPage : IPage
         where TPageView : PageViewBase
     {
-        private readonly bool _playAnimation;
         private readonly bool _isStack;
+        private readonly bool _playAnimation;
 
         public PageBuilderBase(bool playAnimation = true, bool stack = true)
         {
@@ -22,27 +22,30 @@ namespace ScreenSystem.Page
             _isStack = stack;
         }
 
-        public async UniTask<IPage> Build(PageContainer pageContainer, LifetimeScope parent, CancellationToken cancellationToken)
+        public async UniTask<IPage> Build(PageContainer pageContainer, LifetimeScope parent,
+            CancellationToken cancellationToken)
         {
-            var nameAttr = Attribute.GetCustomAttribute(typeof(TPage), typeof(AssetNameAttribute)) as AssetNameAttribute;
+            var nameAttr =
+                Attribute.GetCustomAttribute(typeof(TPage), typeof(AssetNameAttribute)) as AssetNameAttribute;
             var source = new UniTaskCompletionSource<IPage>();
             using (LifetimeScope.EnqueueParent(parent))
             {
-                var pageTask = pageContainer.Push(nameAttr.PrefabName, playAnimation: _playAnimation, stack: _isStack, onLoad: result =>
-                {
-                    if (cancellationToken.IsCancellationRequested)
+                var pageTask = pageContainer.Push(nameAttr.PrefabName, _playAnimation, _isStack, onLoad: result =>
                     {
-                        source.TrySetCanceled(cancellationToken);
-                        return;
-                    }
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            source.TrySetCanceled(cancellationToken);
+                            return;
+                        }
 
-                    var pageView = result.page as TPageView;
-                    var lts = pageView.gameObject.GetComponentInChildren<LifetimeScope>();
-                    SetUpParameter(lts);
-                    lts.Build();
-                    var pageInstance = lts.Container.Resolve<TPage>();
-                    source.TrySetResult(pageInstance);
-                });
+                        var pageView = result.page as TPageView;
+                        var lts = pageView.gameObject.GetComponentInChildren<LifetimeScope>();
+                        SetUpParameter(lts);
+                        lts.Build();
+                        var pageInstance = lts.Container.Resolve<TPage>();
+                        source.TrySetResult(pageInstance);
+                    }
+                );
 
                 var page = await source.Task;
                 cancellationToken.ThrowIfCancellationRequested();
@@ -55,14 +58,16 @@ namespace ScreenSystem.Page
         {
         }
     }
-    
+
     public abstract class PageBuilderBase<TPage, TPageView, TParameter> : PageBuilderBase<TPage, TPageView>
         where TPage : IPage
         where TPageView : PageViewBase
     {
         private readonly TParameter _parameter;
-		
-        public PageBuilderBase(TParameter parameter, bool playAnimation = true, bool stack = true) : base(playAnimation, stack)
+
+        public PageBuilderBase(TParameter parameter, bool playAnimation = true, bool stack = true) : base(playAnimation,
+            stack
+        )
         {
             _parameter = parameter;
         }

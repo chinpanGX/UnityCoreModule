@@ -1,5 +1,4 @@
-﻿
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace AppService.Runtime
@@ -30,7 +29,7 @@ namespace AppService.Runtime
                 elapsedTime += Time.deltaTime;
                 await UniTask.Yield(PlayerLoopTiming.Update, destroyCancellationToken);
             }
-            fadeCanvasGroup.alpha = 0;  
+            fadeCanvasGroup.alpha = 0;
         }
 
         public void BlackOut()

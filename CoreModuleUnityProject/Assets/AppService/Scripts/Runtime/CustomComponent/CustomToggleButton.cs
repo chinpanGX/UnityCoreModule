@@ -10,10 +10,10 @@ namespace AppService.Runtime
         [SerializeField] private CustomButton? customButton;
         [SerializeField] private Image onImage;
         [SerializeField] private Image offImage;
-        
+
         private readonly Subject<bool> onOffSubject = new();
-        public Observable<bool> Activated => onOffSubject;
         private bool isActivated;
+        public Observable<bool> Activated => onOffSubject;
 
         public void SetupSafe(bool isActivated)
         {
@@ -22,14 +22,15 @@ namespace AppService.Runtime
                 Debug.LogError("CustomButton が null です。");
                 return;
             }
-            
+
             this.isActivated = isActivated;
             customButton.OnClicked(() =>
-            {
-                this.isActivated = !this.isActivated;
-                onOffSubject.OnNext(this.isActivated);
-                UpdateView();
-            });
+                {
+                    this.isActivated = !this.isActivated;
+                    onOffSubject.OnNext(this.isActivated);
+                    UpdateView();
+                }
+            );
         }
 
         public void Publish()

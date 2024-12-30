@@ -2,14 +2,14 @@ using System;
 
 namespace ScreenSystem.Attributes
 {
-	[AttributeUsage(AttributeTargets.Class, Inherited = false)]
-	public class AssetNameAttribute : Attribute
-	{
-		public string PrefabName { get; }
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
+    public class AssetNameAttribute : Attribute
+    {
 
-		public AssetNameAttribute(string prefabName)
-		{
-			this.PrefabName = prefabName;
-		}
-	}
+        public AssetNameAttribute(string prefabName)
+        {
+            PrefabName = prefabName;
+        }
+        public string PrefabName { get; }
+    }
 }

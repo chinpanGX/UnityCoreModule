@@ -4,7 +4,12 @@ namespace App.UserService.Application
 {
     public class UserApplicationService
     {
-        private IUserRepository userRepository;
+        private readonly IUserRepository userRepository;
+
+        public UserApplicationService(IUserRepository userRepository)
+        {
+            this.userRepository = userRepository;
+        }
 
         public bool ExistUserData()
         {

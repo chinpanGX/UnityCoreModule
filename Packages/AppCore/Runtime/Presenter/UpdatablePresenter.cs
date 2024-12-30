@@ -4,8 +4,8 @@ namespace AppCore.Runtime
 {
     public class UpdatablePresenter
     {
-        private IPresenter? presenter = null;
-        private IPresenter? request = null;
+        private IPresenter? presenter;
+        private IPresenter? request;
 
         public void Execute()
         {

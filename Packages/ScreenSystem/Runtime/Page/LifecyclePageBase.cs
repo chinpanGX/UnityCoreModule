@@ -6,116 +6,144 @@ using UnityScreenNavigator.Runtime.Core.Page;
 
 namespace ScreenSystem.Page
 {
-	public abstract class LifecyclePageBase : IPage, IPageLifecycleEvent, IDisposable
-	{
-		private readonly UnityScreenNavigator.Runtime.Core.Page.Page _page;
+    public abstract class LifecyclePageBase : IPage, IPageLifecycleEvent, IDisposable
+    {
 
-		private CancellationTokenSource _pageExitCancellationTokenSource;
-		public CancellationToken ExitCancellationToken => _pageExitCancellationTokenSource.Token;
-		
-		private readonly CancellationTokenSource _disposeCancellationTokenSource;
-		
-		public CancellationToken DisposeCancellationToken => _disposeCancellationTokenSource.Token;
+        private readonly CancellationTokenSource _disposeCancellationTokenSource;
+        private readonly UnityScreenNavigator.Runtime.Core.Page.Page _page;
 
-		protected LifecyclePageBase(UnityScreenNavigator.Runtime.Core.Page.Page page)
-		{
-			_page = page;
-			_page.AddLifecycleEvent(this);
-			_disposeCancellationTokenSource = new CancellationTokenSource();
-		}
-		
-		public IEnumerator Initialize()
-		{
-			var cts = BuildCancellationTokenSourceOnDispose();
-			yield return InitializeAsync(cts.Token).ToCoroutine();
-			cts.Cancel();
-		}
+        private CancellationTokenSource _pageExitCancellationTokenSource;
 
-		protected virtual UniTask InitializeAsync(CancellationToken cancellationToken) => UniTask.CompletedTask;
+        protected LifecyclePageBase(UnityScreenNavigator.Runtime.Core.Page.Page page)
+        {
+            _page = page;
+            _page.AddLifecycleEvent(this);
+            _disposeCancellationTokenSource = new CancellationTokenSource();
+        }
+        public CancellationToken ExitCancellationToken => _pageExitCancellationTokenSource.Token;
 
-		public IEnumerator WillPushEnter()
-		{
-			EnableExitCancellationTokenSource(true);
-			var cts = BuildCancellationTokenSourceOnDispose();
-			yield return WillPushEnterAsync(cts.Token).ToCoroutine();
-			cts.Cancel();
-		}
+        public CancellationToken DisposeCancellationToken => _disposeCancellationTokenSource.Token;
 
-		protected virtual UniTask WillPushEnterAsync(CancellationToken cancellationToken) => UniTask.CompletedTask;
+        public virtual void Dispose()
+        {
+            _page.RemoveLifecycleEvent(this);
+            _disposeCancellationTokenSource.Cancel();
+            _disposeCancellationTokenSource.Dispose();
+        }
 
-		public virtual void DidPushEnter()
-		{
-		}
+        public IEnumerator Initialize()
+        {
+            var cts = BuildCancellationTokenSourceOnDispose();
+            yield return InitializeAsync(cts.Token).ToCoroutine();
 
-		public IEnumerator WillPushExit()
-		{
-			EnableExitCancellationTokenSource(false);
-			var cts = BuildCancellationTokenSourceOnDispose();
-			yield return WillPushExitAsync(cts.Token).ToCoroutine();
-			cts.Cancel();
-		}
+            cts.Cancel();
+        }
 
-		protected virtual UniTask WillPushExitAsync(CancellationToken cancellationToken) => UniTask.CompletedTask;
+        public IEnumerator WillPushEnter()
+        {
+            EnableExitCancellationTokenSource(true);
+            var cts = BuildCancellationTokenSourceOnDispose();
+            yield return WillPushEnterAsync(cts.Token).ToCoroutine();
 
-		public virtual void DidPushExit() { }
+            cts.Cancel();
+        }
 
-		public IEnumerator WillPopEnter()
-		{
-			EnableExitCancellationTokenSource(true);
-			var cts = BuildCancellationTokenSourceOnDispose();
-			yield return WillPopEnterAsync(cts.Token).ToCoroutine();
-			cts.Cancel();
-		}
+        public virtual void DidPushEnter()
+        {
+        }
 
-		protected virtual UniTask WillPopEnterAsync(CancellationToken cancellationToken) => UniTask.CompletedTask;
+        public IEnumerator WillPushExit()
+        {
+            EnableExitCancellationTokenSource(false);
+            var cts = BuildCancellationTokenSourceOnDispose();
+            yield return WillPushExitAsync(cts.Token).ToCoroutine();
 
-		public virtual void DidPopEnter()
-		{
-		}
+            cts.Cancel();
+        }
 
-		public IEnumerator WillPopExit()
-		{
-			EnableExitCancellationTokenSource(false);
-			var cts = BuildCancellationTokenSourceOnDispose();
-			yield return WillPopExitAsync(cts.Token).ToCoroutine();
-			cts.Cancel();
-		}
+        public virtual void DidPushExit()
+        {
+        }
 
-		protected virtual UniTask WillPopExitAsync(CancellationToken cancellationToken) => UniTask.CompletedTask;
+        public IEnumerator WillPopEnter()
+        {
+            EnableExitCancellationTokenSource(true);
+            var cts = BuildCancellationTokenSourceOnDispose();
+            yield return WillPopEnterAsync(cts.Token).ToCoroutine();
 
-		public virtual void DidPopExit() { }
+            cts.Cancel();
+        }
 
-		public IEnumerator Cleanup()
-		{
-			var cts = BuildCancellationTokenSourceOnDispose();
-			yield return CleanUpAsync(cts.Token).ToCoroutine();
-			cts.Cancel();
-		}
+        public virtual void DidPopEnter()
+        {
+        }
 
-		protected virtual UniTask CleanUpAsync(CancellationToken cancellationToken) => UniTask.CompletedTask;
+        public IEnumerator WillPopExit()
+        {
+            EnableExitCancellationTokenSource(false);
+            var cts = BuildCancellationTokenSourceOnDispose();
+            yield return WillPopExitAsync(cts.Token).ToCoroutine();
 
-		public virtual void Dispose()
-		{
-			_page.RemoveLifecycleEvent(this);
-			_disposeCancellationTokenSource.Cancel();
-			_disposeCancellationTokenSource.Dispose();
-		}
+            cts.Cancel();
+        }
 
-		private void EnableExitCancellationTokenSource(bool enable)
-		{
-			if (enable)
-			{
-				_pageExitCancellationTokenSource = BuildCancellationTokenSourceOnDispose();
-			}
-			else
-			{
-				_pageExitCancellationTokenSource.Cancel();
-			}
-		}
+        public virtual void DidPopExit()
+        {
+        }
 
-		private CancellationTokenSource BuildCancellationTokenSourceOnDispose()
-		{
-			return CancellationTokenSource.CreateLinkedTokenSource(_disposeCancellationTokenSource.Token);
-		}
-	}
+        public IEnumerator Cleanup()
+        {
+            var cts = BuildCancellationTokenSourceOnDispose();
+            yield return CleanUpAsync(cts.Token).ToCoroutine();
+
+            cts.Cancel();
+        }
+
+        protected virtual UniTask InitializeAsync(CancellationToken cancellationToken)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        protected virtual UniTask WillPushEnterAsync(CancellationToken cancellationToken)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        protected virtual UniTask WillPushExitAsync(CancellationToken cancellationToken)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        protected virtual UniTask WillPopEnterAsync(CancellationToken cancellationToken)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        protected virtual UniTask WillPopExitAsync(CancellationToken cancellationToken)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        protected virtual UniTask CleanUpAsync(CancellationToken cancellationToken)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        private void EnableExitCancellationTokenSource(bool enable)
+        {
+            if (enable)
+            {
+                _pageExitCancellationTokenSource = BuildCancellationTokenSourceOnDispose();
+            }
+            else
+            {
+                _pageExitCancellationTokenSource.Cancel();
+            }
+        }
+
+        private CancellationTokenSource BuildCancellationTokenSourceOnDispose()
+        {
+            return CancellationTokenSource.CreateLinkedTokenSource(_disposeCancellationTokenSource.Token);
+        }
+    }
 }

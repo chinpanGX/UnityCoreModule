@@ -6,128 +6,155 @@ using UnityScreenNavigator.Runtime.Core.Modal;
 
 namespace ScreenSystem.Modal
 {
-	public abstract class LifecycleModalBase : IModal, IModalLifecycleEvent, IDisposable
-	{
-		private readonly UnityScreenNavigator.Runtime.Core.Modal.Modal _modal;
+    public abstract class LifecycleModalBase : IModal, IModalLifecycleEvent, IDisposable
+    {
 
-		private readonly UniTaskCompletionSource _completeCompletionSource = new();
+        private readonly UniTaskCompletionSource _completeCompletionSource = new();
 
-		private CancellationTokenSource _exitCancellationTokenSource;
-		public CancellationToken ExitCancellationToken => _exitCancellationTokenSource.Token;
+        private readonly CancellationTokenSource _disposeCancellationTokenSource;
+        private readonly UnityScreenNavigator.Runtime.Core.Modal.Modal _modal;
 
-		private readonly CancellationTokenSource _disposeCancellationTokenSource;
-		
-		public CancellationToken DisposeCancellationToken => _disposeCancellationTokenSource.Token;
+        private CancellationTokenSource _exitCancellationTokenSource;
 
-		protected LifecycleModalBase(UnityScreenNavigator.Runtime.Core.Modal.Modal modal)
-		{
-			_modal = modal;
-			_modal.AddLifecycleEvent(this);
-			_disposeCancellationTokenSource = new CancellationTokenSource();
-		}
-		
-		public IEnumerator Initialize()
-		{
-			var cts = BuildCancellationTokenSourceOnDispose();
-			yield return InitializeAsync(cts.Token).ToCoroutine();
-			cts.Cancel();
-		}
+        protected LifecycleModalBase(UnityScreenNavigator.Runtime.Core.Modal.Modal modal)
+        {
+            _modal = modal;
+            _modal.AddLifecycleEvent(this);
+            _disposeCancellationTokenSource = new CancellationTokenSource();
+        }
+        public CancellationToken ExitCancellationToken => _exitCancellationTokenSource.Token;
 
-		protected virtual UniTask InitializeAsync(CancellationToken cancellationToken) => UniTask.CompletedTask;
+        public CancellationToken DisposeCancellationToken => _disposeCancellationTokenSource.Token;
 
-		public IEnumerator WillPushEnter()
-		{
-			EnableExitTokenSource(true);
-			var cts = BuildCancellationTokenSourceOnDispose();
-			yield return WillPushEnterAsync(cts.Token).ToCoroutine();
-			cts.Cancel();
-		}
+        public virtual void Dispose()
+        {
+            _modal.RemoveLifecycleEvent(this);
+            _disposeCancellationTokenSource.Cancel();
+            _disposeCancellationTokenSource.Dispose();
+        }
 
-		protected virtual UniTask WillPushEnterAsync(CancellationToken cancellationToken) => UniTask.CompletedTask;
+        public UniTask OnCompleteAsync(CancellationToken cancellationToken)
+        {
+            return _completeCompletionSource.Task.AttachExternalCancellation(cancellationToken);
+        }
 
-		public virtual void DidPushEnter()
-		{
-		}
+        public string ModalId => _modal.Identifier;
 
-		public IEnumerator WillPushExit()
-		{
-			EnableExitTokenSource(false);
-			yield return WillPushExitAsync().ToCoroutine();
-		}
+        public IEnumerator Initialize()
+        {
+            var cts = BuildCancellationTokenSourceOnDispose();
+            yield return InitializeAsync(cts.Token).ToCoroutine();
 
-		protected virtual UniTask WillPushExitAsync() => UniTask.CompletedTask;
+            cts.Cancel();
+        }
 
-		public virtual void DidPushExit() { }
+        public IEnumerator WillPushEnter()
+        {
+            EnableExitTokenSource(true);
+            var cts = BuildCancellationTokenSourceOnDispose();
+            yield return WillPushEnterAsync(cts.Token).ToCoroutine();
 
-		public IEnumerator WillPopEnter()
-		{
-			EnableExitTokenSource(true);
-			var cts = BuildCancellationTokenSourceOnDispose();
-			yield return WillPopEnterAsync(cts.Token).ToCoroutine();
-			cts.Cancel();
-		}
+            cts.Cancel();
+        }
 
-		protected virtual UniTask WillPopEnterAsync(CancellationToken cancellationToken) => UniTask.CompletedTask;
+        public virtual void DidPushEnter()
+        {
+        }
 
-		public virtual void DidPopEnter()
-		{
-		}
+        public IEnumerator WillPushExit()
+        {
+            EnableExitTokenSource(false);
+            yield return WillPushExitAsync().ToCoroutine();
+        }
 
-		public IEnumerator WillPopExit()
-		{
-			EnableExitTokenSource(false);
-			var cts = BuildCancellationTokenSourceOnDispose();
-			yield return WillPopExitAsync(cts.Token).ToCoroutine();
-			cts.Cancel();
-		}
+        public virtual void DidPushExit()
+        {
+        }
 
-		protected virtual UniTask WillPopExitAsync(CancellationToken cancellationToken) => UniTask.CompletedTask;
+        public IEnumerator WillPopEnter()
+        {
+            EnableExitTokenSource(true);
+            var cts = BuildCancellationTokenSourceOnDispose();
+            yield return WillPopEnterAsync(cts.Token).ToCoroutine();
 
-		public virtual void DidPopExit() { }
+            cts.Cancel();
+        }
 
-		public IEnumerator Cleanup()
-		{
-			var cts = BuildCancellationTokenSourceOnDispose();
-			yield return CleanUpAsync(cts.Token).ToCoroutine();
-			cts.Cancel();
-		}
+        public virtual void DidPopEnter()
+        {
+        }
 
-		protected virtual UniTask CleanUpAsync(CancellationToken cancellationToken) => UniTask.CompletedTask;
+        public IEnumerator WillPopExit()
+        {
+            EnableExitTokenSource(false);
+            var cts = BuildCancellationTokenSourceOnDispose();
+            yield return WillPopExitAsync(cts.Token).ToCoroutine();
 
-		public virtual void Dispose()
-		{
-			_modal.RemoveLifecycleEvent(this);
-			_disposeCancellationTokenSource.Cancel();
-			_disposeCancellationTokenSource.Dispose();
-		}
+            cts.Cancel();
+        }
 
-		private void EnableExitTokenSource(bool enable)
-		{
-			if (enable)
-			{
-				_exitCancellationTokenSource = BuildCancellationTokenSourceOnDispose();
-			}
-			else
-			{
-				_exitCancellationTokenSource.Cancel();
-			}
-		}
+        public virtual void DidPopExit()
+        {
+        }
 
-		private CancellationTokenSource BuildCancellationTokenSourceOnDispose()
-		{
-			return CancellationTokenSource.CreateLinkedTokenSource(_disposeCancellationTokenSource.Token);
-		}
+        public IEnumerator Cleanup()
+        {
+            var cts = BuildCancellationTokenSourceOnDispose();
+            yield return CleanUpAsync(cts.Token).ToCoroutine();
 
-		protected void Complete()
-		{
-			_completeCompletionSource.TrySetResult();
-		}
+            cts.Cancel();
+        }
 
-		public UniTask OnCompleteAsync(CancellationToken cancellationToken)
-		{
-			return _completeCompletionSource.Task.AttachExternalCancellation(cancellationToken);
-		}
+        protected virtual UniTask InitializeAsync(CancellationToken cancellationToken)
+        {
+            return UniTask.CompletedTask;
+        }
 
-		public string ModalId => _modal.Identifier;
-	}
+        protected virtual UniTask WillPushEnterAsync(CancellationToken cancellationToken)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        protected virtual UniTask WillPushExitAsync()
+        {
+            return UniTask.CompletedTask;
+        }
+
+        protected virtual UniTask WillPopEnterAsync(CancellationToken cancellationToken)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        protected virtual UniTask WillPopExitAsync(CancellationToken cancellationToken)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        protected virtual UniTask CleanUpAsync(CancellationToken cancellationToken)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        private void EnableExitTokenSource(bool enable)
+        {
+            if (enable)
+            {
+                _exitCancellationTokenSource = BuildCancellationTokenSourceOnDispose();
+            }
+            else
+            {
+                _exitCancellationTokenSource.Cancel();
+            }
+        }
+
+        private CancellationTokenSource BuildCancellationTokenSourceOnDispose()
+        {
+            return CancellationTokenSource.CreateLinkedTokenSource(_disposeCancellationTokenSource.Token);
+        }
+
+        protected void Complete()
+        {
+            _completeCompletionSource.TrySetResult();
+        }
+    }
 }

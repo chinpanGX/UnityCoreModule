@@ -19,26 +19,29 @@ namespace ScreenSystem.Modal
             _playAnimation = playAnimation;
         }
 
-        public async UniTask<IModal> Build(ModalContainer modalContainer, LifetimeScope parent, CancellationToken cancellationToken)
+        public async UniTask<IModal> Build(ModalContainer modalContainer, LifetimeScope parent,
+            CancellationToken cancellationToken)
         {
-            var nameAttr = Attribute.GetCustomAttribute(typeof(TModal), typeof(AssetNameAttribute)) as AssetNameAttribute;
+            var nameAttr =
+                Attribute.GetCustomAttribute(typeof(TModal), typeof(AssetNameAttribute)) as AssetNameAttribute;
             var source = new UniTaskCompletionSource<IModal>();
             using (LifetimeScope.EnqueueParent(parent))
             {
-                var modalTask = modalContainer.Push(nameAttr.PrefabName, playAnimation: _playAnimation, onLoad: modal =>
-                {
-                    if (cancellationToken.IsCancellationRequested)
+                var modalTask = modalContainer.Push(nameAttr.PrefabName, _playAnimation, onLoad: modal =>
                     {
-                        source.TrySetCanceled(cancellationToken);
-                        return;
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            source.TrySetCanceled(cancellationToken);
+                            return;
+                        }
+                        var modalView = modal.modal as TModalView;
+                        var lts = modalView.gameObject.GetComponentInChildren<LifetimeScope>();
+                        SetUpParameter(lts);
+                        lts.Build();
+                        var pageInstance = lts.Container.Resolve<TModal>();
+                        source.TrySetResult(pageInstance);
                     }
-                    var modalView = modal.modal as TModalView;
-                    var lts = modalView.gameObject.GetComponentInChildren<LifetimeScope>();
-                    SetUpParameter(lts);
-                    lts.Build();
-                    var pageInstance = lts.Container.Resolve<TModal>();
-                    source.TrySetResult(pageInstance);
-                });
+                );
 
                 var modal = await source.Task;
                 await modalTask.Task;

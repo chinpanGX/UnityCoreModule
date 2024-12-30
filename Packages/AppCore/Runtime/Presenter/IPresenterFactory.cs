@@ -1,7 +1,6 @@
-﻿using AppCore.Runtime;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace App.Title
+namespace AppCore.Runtime
 {
     public interface IPresenterFactory
     {

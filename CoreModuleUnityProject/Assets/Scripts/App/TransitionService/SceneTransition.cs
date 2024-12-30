@@ -4,7 +4,8 @@ using UnityEngine.SceneManagement;
 
 namespace AppService.Runtime
 {
-    public class SceneTransition
+
+    public class SceneTransitionService : ISceneTransitionService
     {
         private readonly FadeScreen fadeScreen = ComponentLocator.Get<FadeScreen>();
 

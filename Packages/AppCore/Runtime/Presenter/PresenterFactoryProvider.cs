@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace App.Title
+namespace AppCore.Runtime
 {
     public sealed class PresenterFactoryProvider
     {
@@ -10,7 +10,7 @@ namespace App.Title
         {
             PresenterFactory.TryAdd(key, factory);
         }
-        
+
         public IPresenterFactory Get(string name)
         {
             return PresenterFactory[name];

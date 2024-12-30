@@ -55,22 +55,6 @@ namespace AppCore.Runtime
             return null;
         }
 
-        public static T FromResources<T>(string path) where T : Component
-        {
-            var comp = GetOrNull<T>();
-            if (comp) return comp;
-
-            var resource = Resources.Load<T>(path);
-            if (resource)
-            {
-                comp = Object.Instantiate(resource);
-                Uncache<T>();
-                Cache(comp);
-                return comp;
-            }
-            return null;
-        }
-
         public static void Cache<T>(T value) where T : Component
         {
             StaticCache<T>.Value = value;
@@ -128,4 +112,5 @@ namespace AppCore.Runtime
             set => Value = value as T;
         }
     }
+
 }

@@ -1,18 +1,18 @@
 {
-    "name": "App.TransitionService",
-    "rootNamespace": "App.TransitionService",
-    "references": [
-        "GUID:f51ebe6a0ceec4240a699833d6309b23",
-        "GUID:cb63c1fc9fe0b5f4981fa4204c07923e",
-        "GUID:54a2c7e87b2e33c4682fe98c62bb2fe5"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": false,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+  "name": "App.TransitionService",
+  "rootNamespace": "App.TransitionService",
+  "references": [
+    "GUID:f51ebe6a0ceec4240a699833d6309b23",
+    "GUID:cb63c1fc9fe0b5f4981fa4204c07923e",
+    "GUID:54a2c7e87b2e33c4682fe98c62bb2fe5"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
 }

@@ -1,27 +1,26 @@
 using AppCore.Runtime;
-using AppService.Runtime;
 using R3;
 
 namespace App.Title
 {
     public class TitlePresenter : IPresenter
     {
-        private TitleDirector Director { get; set; }
-        private TitleModel Model { get; set; }
-        private TitleView View { get; set; }
-        private StateMachine<TitlePresenter> StateMachine { get; set; }
-        private SceneTransition SceneTransition { get; set; }
-
-        public TitlePresenter(TitleDirector director, TitleModel model, TitleView view, SceneTransition sceneTransition)
+        public TitlePresenter(IDirector director, TitleModel model, TitleView view,
+            ISceneTransitionService sceneTransitionService)
         {
             Director = director;
             Model = model;
             View = view;
-            SceneTransition = sceneTransition;
+            SceneTransitionService = sceneTransitionService;
             StateMachine = new StateMachine<TitlePresenter>(this);
             StateMachine.Change<StateInit>();
         }
-        
+        private IDirector Director { get; set; }
+        private TitleModel Model { get; set; }
+        private TitleView View { get; set; }
+        private StateMachine<TitlePresenter> StateMachine { get; set; }
+        private ISceneTransitionService SceneTransitionService { get; }
+
         public void Dispose()
         {
             Director = null;
@@ -38,9 +37,9 @@ namespace App.Title
             StateMachine.Execute();
         }
 
-        class StateInit : StateMachine<TitlePresenter>.State
+        private class StateInit : StateMachine<TitlePresenter>.State
         {
-            readonly CancellationDisposable cancellationDisposable = new ();
+            private readonly CancellationDisposable cancellationDisposable = new();
             public override void Begin(TitlePresenter owner)
             {
                 var model = owner.Model;
@@ -64,23 +63,23 @@ namespace App.Title
                     case TitleModel.TransitionState.Home:
                         owner.StateMachine.Change<StateHome>();
                         break;
-                } 
+                }
             }
         }
 
-        class StateSignup : StateMachine<TitlePresenter>.State
+        private class StateSignup : StateMachine<TitlePresenter>.State
         {
             public override void Begin(TitlePresenter owner)
             {
-                
+
             }
         }
 
-        class StateHome : StateMachine<TitlePresenter>.State
+        private class StateHome : StateMachine<TitlePresenter>.State
         {
             public override void Begin(TitlePresenter owner)
             {
-                owner.SceneTransition.ChangeScene("Home");
+                owner.SceneTransitionService.ChangeScene("Home");
             }
         }
     }

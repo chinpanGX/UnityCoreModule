@@ -1,11 +1,10 @@
 ﻿{
-    "name": "appservice",
-    "displayName": "AppService",
-    "version": "1.0.0",
-    "description": "UnityEngineに依存しているパッケージ",
-    "dependencies": 
-    {
-        "com.unity.modules.imgui": "1.0.0",
-        "com.cysharp.r3": "1.2.9"  
-    }
+  "name": "appservice",
+  "displayName": "AppService",
+  "version": "1.0.0",
+  "description": "UnityEngineに依存しているパッケージ",
+  "dependencies": {
+    "com.unity.modules.imgui": "1.0.0",
+    "com.cysharp.r3": "1.2.9"
+  }
 }

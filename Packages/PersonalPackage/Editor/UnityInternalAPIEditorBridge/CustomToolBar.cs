@@ -11,22 +11,22 @@ namespace PersonalPackage
         private static string currentBranchName = "";
         private static Label label;
 
+        static CustomToolBar()
+        {
+            CurrentPathName = GetProjectPath(new DirectoryInfo(Application.dataPath));
+        }
+
         [InitializeOnLoadMethod]
         private static void InitializeOnLoad()
         {
             EditorApplication.update += Setup;
-            EditorApplication.focusChanged += (isFocus) =>
+            EditorApplication.focusChanged += isFocus =>
             {
                 if (isFocus)
                 {
                     Execute();
                 }
             };
-        }
-
-        static CustomToolBar()
-        {
-            CurrentPathName = GetProjectPath(new DirectoryInfo(Application.dataPath));
         }
 
         private static void Setup()
@@ -49,11 +49,15 @@ namespace PersonalPackage
             var assets = new DirectoryInfo(Application.dataPath);
             var branchName = GetBranchName(assets);
             if (branchName != null && currentBranchName == branchName)
+            {
                 return;
+            }
 
             currentBranchName = branchName;
             if (label != null)
-                label.text = $"パス名: {CurrentPathName} / ブランチ名: {currentBranchName}";    
+            {
+                label.text = $"パス名: {CurrentPathName} / ブランチ名: {currentBranchName}";
+            }
         }
 
         private static string GetProjectPath(DirectoryInfo assetsFolder)
@@ -67,7 +71,9 @@ namespace PersonalPackage
         {
             var parent = dirInfo.Parent;
             if (parent == null)
+            {
                 return "";
+            }
 
             var searchGitPath = $"{parent.FullName.Replace("\\", "/")}/.git";
             if (!Directory.Exists(searchGitPath))

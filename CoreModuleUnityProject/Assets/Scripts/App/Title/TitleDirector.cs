@@ -2,6 +2,8 @@ using App.UserService.Application;
 using App.UserService.Infrastructure;
 using AppCore.Runtime;
 using AppService.Runtime;
+using R3;
+using R3.Triggers;
 using UnityEngine;
 
 namespace App.Title
@@ -24,8 +26,14 @@ namespace App.Title
                 presenterFactoryProvider = value;
             }
 
+            presenterFactoryProvider.TryAdd("Title", new TitlePresenterFactory(this, new SceneTransitionService()));
+
             fadeScreen = ComponentLocator.Get<FadeScreen>();
             updatablePresenter = new UpdatablePresenter();
+
+            this.UpdateAsObservable().Subscribe(_ => updatablePresenter.Execute()).RegisterTo(destroyCancellationToken);
+
+            Push("Title");
         }
 
         public async void Push(string name)
@@ -36,7 +44,7 @@ namespace App.Title
             await fadeScreen.FadeOut();
         }
 
-        public class TitlePresenterFactory : IPresenterFactory
+        class TitlePresenterFactory : IPresenterFactory
         {
             private readonly IDirector director;
             private readonly ISceneTransitionService sceneTransitionService;
@@ -51,8 +59,32 @@ namespace App.Title
             {
                 var userApplicationService = new UserApplicationService(new PlayerPrefsUserRepository());
                 var model = new TitleModel(userApplicationService);
-                var presenter = new TitlePresenter(director, model, new TitleView(), sceneTransitionService);
+                var view = await TitleView.CreateAsync();
+                var presenter = new TitlePresenter(director, model, view, sceneTransitionService);
                 return presenter;
+            }
+        }
+
+        class SignupPresenterFactory : IPresenterFactory
+        {
+            private readonly IDirector director;
+            private readonly ISceneTransitionService sceneTransitionService;
+
+            public SignupPresenterFactory(IDirector director, ISceneTransitionService sceneTransitionService)
+            {
+                this.director = director;
+                this.sceneTransitionService = sceneTransitionService;
+            }
+
+            public Awaitable<IPresenter> CreateAsync()
+            {
+                // var userApplicationService = new UserApplicationService(new PlayerPrefsUserRepository());
+                // var model = new SignupModel(userApplicationService);
+                // var view = SignupView.Create();
+                // var presenter = new SignupPresenter(director, model, view, sceneTransitionService);
+                // return presenter;
+
+                return default;
             }
         }
     }

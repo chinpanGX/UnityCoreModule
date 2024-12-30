@@ -12,8 +12,16 @@ namespace App.Title
         }
 
         private readonly Subject<TransitionState> transitionState = new();
+        private readonly UserApplicationService userApplicationService;
+        
+        public Observable<TransitionState> OnTransitionState => transitionState;
 
         public TitleModel(UserApplicationService userApplicationService)
+        {
+            this.userApplicationService = userApplicationService;
+        }
+
+        public void ChangeTransitionState()
         {
             if (userApplicationService.ExistUserData())
             {
@@ -21,17 +29,10 @@ namespace App.Title
             }
         }
 
-        public Observable<TransitionState> OnTransitionState => transitionState;
-
         public void Dispose()
         {
             transitionState.OnCompleted();
             transitionState.Dispose();
-        }
-
-        public void Execute()
-        {
-
         }
     }
 }

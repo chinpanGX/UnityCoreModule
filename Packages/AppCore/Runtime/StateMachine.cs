@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using Codice.CM.Common;
 
 namespace AppCore.Runtime
 {
@@ -9,22 +10,23 @@ namespace AppCore.Runtime
         private readonly List<IState> cache = new();
 
         private readonly T owner;
-        private IState request = null!;
+        private IState? request;
 
         public StateMachine(T owner)
         {
             this.owner = owner;
         }
-        private IState Current { get; set; } = null!;
-
-        /// <summary>
-        ///     後始末
-        /// </summary>
+        private IState? Current { get; set; }
+        
         public void Dispose()
         {
-            Current.End(owner);
-            Free(Current);
-            Current = null!;
+            if (Current != null)
+            {
+                Current.End(owner);
+                Free(Current);   
+            }
+            
+            Current = null;
 
             foreach (var state in cache)
             {
@@ -32,43 +34,36 @@ namespace AppCore.Runtime
             }
             cache.Clear();
         }
-
-        /// <summary>
-        ///     ステートを切り替える
-        /// </summary>
-        /// <typeparam name="TState"></typeparam>
+        
         public void Change<TState>() where TState : IState, new()
         {
             request = Alloc<TState>();
         }
-
-        /// <summary>
-        ///     実行
-        /// </summary>
+        
         public void Execute()
         {
-            Current.End(owner);
-            Free(Current);
+            if (request != null)
+            {
+                if (Current != null)
+                {
+                    Current.End(owner);
+                    Free(Current);
+                }
 
-            Current = request;
-            request = null!;
+                Current = request;
+                request = null!;
 
-            Current.Begin(owner);
+                Current.Begin(owner);
+            }
 
-            Current.Execute(owner);
+            Current?.Execute(owner);
         }
-
-        /// <summary>
-        ///     現在のステートを確認
-        /// </summary>
+        
         public bool IsState<TState>() where TState : IState
         {
             return Current is TState;
         }
-
-        /// <summary>
-        ///     ステートの確保
-        /// </summary>
+        
         private IState Alloc<TState>() where TState : IState, new()
         {
             foreach (var value in cache)
@@ -80,10 +75,7 @@ namespace AppCore.Runtime
             }
             return new TState();
         }
-
-        /// <summary>
-        ///     ステートの解放
-        /// </summary>
+        
         private void Free<TState>(TState state) where TState : IState
         {
             state.Clear();

@@ -5,6 +5,12 @@ namespace App.Title
 {
     public class TitlePresenter : IPresenter
     {
+        private IDirector Director { get; set; }
+        private TitleModel Model { get; set; }
+        private TitleView View { get; set; }
+        private StateMachine<TitlePresenter> StateMachine { get; set; }
+        private ISceneTransitionService SceneTransitionService { get; }
+
         public TitlePresenter(IDirector director, TitleModel model, TitleView view,
             ISceneTransitionService sceneTransitionService)
         {
@@ -15,11 +21,11 @@ namespace App.Title
             StateMachine = new StateMachine<TitlePresenter>(this);
             StateMachine.Change<StateInit>();
         }
-        private IDirector Director { get; set; }
-        private TitleModel Model { get; set; }
-        private TitleView View { get; set; }
-        private StateMachine<TitlePresenter> StateMachine { get; set; }
-        private ISceneTransitionService SceneTransitionService { get; }
+        
+        public void Execute()
+        {
+            StateMachine.Execute();
+        }
 
         public void Dispose()
         {
@@ -32,20 +38,24 @@ namespace App.Title
             StateMachine = null;
         }
 
-        public void Execute()
-        {
-            StateMachine.Execute();
-        }
-
         private class StateInit : StateMachine<TitlePresenter>.State
         {
             private readonly CancellationDisposable cancellationDisposable = new();
+            
             public override void Begin(TitlePresenter owner)
             {
                 var model = owner.Model;
+                var view = owner.View;
+
+                view.OnClick.Subscribe(_ => model.ChangeTransitionState())
+                    .RegisterTo(cancellationDisposable.Token);
+
                 model.OnTransitionState.Subscribe(state => TransitionState(state, owner))
                     .RegisterTo(cancellationDisposable.Token);
-                model.Execute();
+
+                view.Setup();
+                view.Push();
+                view.Open();
             }
 
             public override void End(TitlePresenter owner)
@@ -71,7 +81,7 @@ namespace App.Title
         {
             public override void Begin(TitlePresenter owner)
             {
-
+                owner.Director.Push("Signup");
             }
         }
 

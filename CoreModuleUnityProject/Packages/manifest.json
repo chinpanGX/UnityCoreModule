@@ -7,6 +7,7 @@
     "com.cysharp.unitask": "2.5.10",
     "com.cysharp.zstring": "2.6.0",
     "com.harumak.unityscreennavigator": "https://github.com/Haruma-K/UnityScreenNavigator.git?path=/Assets/UnityScreenNavigator",
+    "com.unity.addressables": "2.2.2",
     "com.unity.ai.navigation": "2.0.4",
     "com.unity.cinemachine": "3.1.2",
     "com.unity.collab-proxy": "2.5.2",

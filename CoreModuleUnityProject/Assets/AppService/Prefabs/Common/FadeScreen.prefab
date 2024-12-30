@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6982177161660382354}
   - component: {fileID: 3385749675761673296}
   - component: {fileID: 1110732740087535833}
-  - component: {fileID: 553326675950002863}
   - component: {fileID: 4892786059730990282}
   - component: {fileID: 7315757141242635865}
   m_Layer: 8
@@ -87,23 +86,6 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
---- !u!114 &553326675950002863
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8101747981728105448}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!225 &4892786059730990282
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -112,9 +94,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8101747981728105448}
   m_Enabled: 1
-  m_Alpha: 0
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!114 &7315757141242635865
 MonoBehaviour:
@@ -129,7 +111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadeCanvasGroup: {fileID: 4892786059730990282}
-  durationSecond: 0.1
+  durationSecond: 0.5
 --- !u!1 &8398234385452951058
 GameObject:
   m_ObjectHideFlags: 0

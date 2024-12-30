@@ -1,14 +1,17 @@
 {
-    "name": "App.Title",
-    "rootNamespace": "App.Title",
+    "name": "App.Home",
+    "rootNamespace": "App.Home",
     "references": [
-        "GUID:f51ebe6a0ceec4240a699833d6309b23",
-        "GUID:77221876cc6b8244180b96e320b1bcd4",
         "GUID:54a2c7e87b2e33c4682fe98c62bb2fe5",
-        "GUID:cb63c1fc9fe0b5f4981fa4204c07923e",
+        "GUID:29606d611b593db43bc61654bc78b761",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
         "GUID:7734ae3a0c04fe54b9f2255531b33440",
         "GUID:83081fb983602da429666f5930ec5b7f",
-        "GUID:0d22d9636a155104aacff8cbf3f53a33"
+        "GUID:cbf9e94c6d2ab0e48bdac23fac04f77d",
+        "GUID:cb63c1fc9fe0b5f4981fa4204c07923e",
+        "GUID:f053358e35e6a9646a70331f887be08a",
+        "GUID:77221876cc6b8244180b96e320b1bcd4"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

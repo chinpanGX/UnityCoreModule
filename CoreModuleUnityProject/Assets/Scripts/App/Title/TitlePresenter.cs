@@ -1,4 +1,7 @@
 using AppCore.Runtime;
+using AppService.Runtime;
+using AssetLoader.Application;
+using Cysharp.Threading.Tasks;
 using R3;
 
 namespace App.Title
@@ -8,20 +11,22 @@ namespace App.Title
         private IDirector Director { get; set; }
         private TitleModel Model { get; set; }
         private TitleView View { get; set; }
+        private FadeScreenView FadeScreenView { get; set; }
         private StateMachine<TitlePresenter> StateMachine { get; set; }
-        private ISceneTransitionService SceneTransitionService { get; }
+        private ISceneLoader SceneLoader { get; set; }
 
-        public TitlePresenter(IDirector director, TitleModel model, TitleView view,
-            ISceneTransitionService sceneTransitionService)
+        public TitlePresenter(IDirector director, TitleModel model, TitleView view, FadeScreenView fadeScreenView,
+            ISceneLoader sceneLoader)
         {
             Director = director;
             Model = model;
             View = view;
-            SceneTransitionService = sceneTransitionService;
+            FadeScreenView = fadeScreenView;
+            SceneLoader = sceneLoader;
             StateMachine = new StateMachine<TitlePresenter>(this);
             StateMachine.Change<StateInit>();
         }
-        
+
         public void Execute()
         {
             StateMachine.Execute();
@@ -41,20 +46,15 @@ namespace App.Title
         private class StateInit : StateMachine<TitlePresenter>.State
         {
             private readonly CancellationDisposable cancellationDisposable = new();
-            
+
             public override void Begin(TitlePresenter owner)
             {
-                var model = owner.Model;
                 var view = owner.View;
 
-                view.OnClick.Subscribe(_ => model.ChangeTransitionState())
-                    .RegisterTo(cancellationDisposable.Token);
-
-                model.OnTransitionState.Subscribe(state => TransitionState(state, owner))
+                view.OnClick.Subscribe(_ => owner.StateMachine.Change<SceneTransitionToHome>())
                     .RegisterTo(cancellationDisposable.Token);
 
                 view.Setup();
-                view.Push();
                 view.Open();
             }
 
@@ -62,34 +62,21 @@ namespace App.Title
             {
                 cancellationDisposable.Dispose();
             }
-
-            private void TransitionState(TitleModel.TransitionState state, TitlePresenter owner)
-            {
-                switch (state)
-                {
-                    case TitleModel.TransitionState.Signup:
-                        owner.StateMachine.Change<StateSignup>();
-                        break;
-                    case TitleModel.TransitionState.Home:
-                        owner.StateMachine.Change<StateHome>();
-                        break;
-                }
-            }
         }
 
-        private class StateSignup : StateMachine<TitlePresenter>.State
+        private class SceneTransitionToHome : StateMachine<TitlePresenter>.State
         {
             public override void Begin(TitlePresenter owner)
             {
-                owner.Director.Push("Signup");
+                owner.FadeScreenView.Open();
+                OnSceneTransitioned(owner).Forget();
             }
-        }
 
-        private class StateHome : StateMachine<TitlePresenter>.State
-        {
-            public override void Begin(TitlePresenter owner)
+            private async UniTask OnSceneTransitioned(TitlePresenter owner)
             {
-                owner.SceneTransitionService.ChangeScene("Home");
+                await owner.FadeScreenView.FadeIn();
+                await owner.SceneLoader.LoadSceneAsync("HomeScene", false);
+                await owner.SceneLoader.UnloadSceneAsync("TitleScene");
             }
         }
     }

@@ -112,5 +112,4 @@ namespace AppCore.Runtime
             set => Value = value as T;
         }
     }
-
 }

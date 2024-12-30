@@ -1,7 +1,6 @@
-using App.UserService.Application;
-using App.UserService.Infrastructure;
 using AppCore.Runtime;
 using AppService.Runtime;
+using AssetLoader.Infrastructure;
 using R3;
 using R3.Triggers;
 using UnityEngine;
@@ -10,12 +9,19 @@ namespace App.Title
 {
     public class TitleDirector : MonoBehaviour, IDirector
     {
-        private FadeScreen fadeScreen;
+        [SerializeField] private TitleView titleView;
+        [SerializeField] private FadeScreenView fadeScreenView;
         private PresenterFactoryProvider presenterFactoryProvider;
         private UpdatablePresenter updatablePresenter;
 
-        private void Start()
+        private async void Start()
         {
+            titleView.Push();
+            titleView.Close();
+            fadeScreenView.Push();
+            fadeScreenView.Open();
+            fadeScreenView.BlackOut();
+            
             if (!ServiceLocator.TryGet<PresenterFactoryProvider>(out var value))
             {
                 presenterFactoryProvider = new PresenterFactoryProvider();
@@ -26,66 +32,18 @@ namespace App.Title
                 presenterFactoryProvider = value;
             }
 
-            presenterFactoryProvider.TryAdd("Title", new TitlePresenterFactory(this, new SceneTransitionService()));
-
-            fadeScreen = ComponentLocator.Get<FadeScreen>();
+            var request = new TitlePresenter(this, new TitleModel(), titleView, fadeScreenView, new SceneLoader());
+            
             updatablePresenter = new UpdatablePresenter();
-
+            updatablePresenter.SetRequest(request);
             this.UpdateAsObservable().Subscribe(_ => updatablePresenter.Execute()).RegisterTo(destroyCancellationToken);
 
-            Push("Title");
+            await fadeScreenView.FadeOut();
         }
 
-        public async void Push(string name)
+        public void Push(string name)
         {
-            await fadeScreen.FadeIn();
-            var request = await presenterFactoryProvider.Get(name).CreateAsync();
-            updatablePresenter.SetRequest(request);
-            await fadeScreen.FadeOut();
-        }
-
-        class TitlePresenterFactory : IPresenterFactory
-        {
-            private readonly IDirector director;
-            private readonly ISceneTransitionService sceneTransitionService;
-
-            public TitlePresenterFactory(IDirector director, ISceneTransitionService sceneTransitionService)
-            {
-                this.director = director;
-                this.sceneTransitionService = sceneTransitionService;
-            }
-
-            public async Awaitable<IPresenter> CreateAsync()
-            {
-                var userApplicationService = new UserApplicationService(new PlayerPrefsUserRepository());
-                var model = new TitleModel(userApplicationService);
-                var view = await TitleView.CreateAsync();
-                var presenter = new TitlePresenter(director, model, view, sceneTransitionService);
-                return presenter;
-            }
-        }
-
-        class SignupPresenterFactory : IPresenterFactory
-        {
-            private readonly IDirector director;
-            private readonly ISceneTransitionService sceneTransitionService;
-
-            public SignupPresenterFactory(IDirector director, ISceneTransitionService sceneTransitionService)
-            {
-                this.director = director;
-                this.sceneTransitionService = sceneTransitionService;
-            }
-
-            public Awaitable<IPresenter> CreateAsync()
-            {
-                // var userApplicationService = new UserApplicationService(new PlayerPrefsUserRepository());
-                // var model = new SignupModel(userApplicationService);
-                // var view = SignupView.Create();
-                // var presenter = new SignupPresenter(director, model, view, sceneTransitionService);
-                // return presenter;
-
-                return default;
-            }
+               
         }
     }
 }

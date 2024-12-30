@@ -13,5 +13,20 @@ namespace AppService.Runtime
             }
             return component;
         }
+        
+        public static T GetComponentSafe<T>(this GameObject gameObject) where T : Component
+        {
+            var component = gameObject.GetComponent<T>();
+            if (component == null)
+            {
+                throw new ComponentErrorException($"Component not found: {typeof(T).Name}");
+            }
+            return component;
+        }
+    }
+    
+    public class ComponentErrorException : System.Exception
+    {
+        public ComponentErrorException(string message) : base(message) { }
     }
 }

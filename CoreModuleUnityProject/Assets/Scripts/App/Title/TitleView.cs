@@ -1,11 +1,7 @@
-using System;
 using AppCore.Runtime;
 using AppService.Runtime;
-using Cysharp.Threading.Tasks;
 using R3;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using Screen = AppCore.Runtime.Screen;
 
 namespace App.Title
 {
@@ -14,20 +10,10 @@ namespace App.Title
         [SerializeField] private Canvas canvas;
         [SerializeField] private CustomButton startButton;
         
-        static Screen Screen => ComponentLocator.Get<Screen>();
+        static ViewScreen ViewScreen => ComponentLocator.Get<ViewScreen>();
         public Canvas Canvas => canvas;
         private readonly Subject<Unit> onClick = new();
         public Observable<Unit> OnClick => onClick;
-        
-        public static async UniTask<TitleView> CreateAsync()
-        {
-            var handle = Addressables.LoadAssetAsync<GameObject>("TitleView");
-            await handle.Task;
-            var gameObject = Instantiate(handle.Result);
-            gameObject.SetActive(false);
-            var view = gameObject.GetOrAddComponent<TitleView>();
-            return view;
-        } 
         
         public void Setup()
         {
@@ -36,12 +22,12 @@ namespace App.Title
         
         public void Push()
         {
-            Screen.Push(this);
+            ViewScreen.Push(this);
         }
 
         public void Pop()
         {
-            Screen.Pop();
+            ViewScreen.Pop();
         }
 
         public void Open()
@@ -51,7 +37,7 @@ namespace App.Title
 
         public void Close()
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 }
